@@ -1,0 +1,67 @@
+C는 출력을 할 때 형식을 지정해줘야함
+printf("Output: %c %s %d %#X %ld %.4f %.2lf %p\n", c, s, i, i, l, f, d, p);
+
+- #X: 16진수
+- ld: long decimal
+- .4f: 실수인데 소수점 이하 4자리
+
+scanf("%c %s %d %ld %f %lf", &c, s, &i, &l, &f, &d); 
+
+- c에는 레퍼런스 타입이 없음, scanf c는 character을 읽어 넘기는건데
+레퍼런스 타입을 지원하지 않으므로 주소값을 줘야함
+-> c에는 레퍼런스 기호가 없으므로 Call by Ref을 하려면 주소값을 주고
+포인터로 받아야 함
+
+main(int argc, char *argv[])
+-> argc는 넘겨준 파일의 수 + 1
+-> argv는 시작 위치, [0]은 실행한 이 파일의 시작 위치
+
+# 동적 할당
+int *p = (int *)malloc(100*sizeof(int));
+free(p)
+
+# Pointer vs Array
+square(int a[], int num) {
+  int i;
+  for (i = 0; i < num; i++) {
+    a[i] *= a[i]
+  }
+}
+
+square(int *a, int num) {
+  int i;
+  for (i = 0; i < num; i++) {
+    a[i] *= a[i]
+    (*(a+i)) *= (*(a+i))
+    (*a) *= (*a), a++  
+  }
+}
+
+# C 문자열 
+
+#include <string.h>
+char c[] = "Hello, World!"
+char *c2 = "Hello, World!"
+
+# size_t strlen(const char* str)
+- 문자열을 받아 문자열 길이 반환, \0이 나오기 까지의 문자 개수를 셈
+
+# char* strcpy(char* dest, const char* source);
+- origin 문자열 전체를 dest로 복사
+char origin[] = "Hello";
+char dest[100];
+strcpy(dest, origin);
+
+# char* strcat(char* dest, const char* origin);
+- origin 문자열을 dest 뒤쪽에 이어붙임
+char origin[] = "World!";
+char dest[20] = "Hello, ";
+strcat(dest, origin);
+// dest: Hello, World!
+
+# int strcmp(const char* str1, const char* str2);
+두 문자열이 같으면 0, 문자열 1이 더 크면 양수, 문자열 1이 작으면 음수
+
+# int atoi(const char*) -> string to int
+
+# sprintf(str, "%d", 10); // str에 문자열 10이 저장

@@ -1,0 +1,133 @@
+#include <unistd.h>에 미리 정의된 file descriptions이 있다.
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+int open(char *pathname, int oflag, ..../* mode_t mode */);
+
+- pathname: 경로
+- oflag: 옵션 지정
+성공적으로 열면 file descriptor 리턴, 아니면 -1
+descriptor 0, 1, 2는 이미 열려있으므로 3부터 시작
+
+int close(int fd);
+- 0 if OK, -1 if error
+
+ssize_t read(int fd, void* buf, size_t nbytes);
+- open한 fd에 이 버퍼에다 최대 n바이트만큼 읽기
+- OK이면 실제로 읽어온 바이트 수, -1이면 에러
+
+ssize_t write(int fd, void* buf, size_t nbytes);
+- open한 fd에 쓰는데 buffer에 쓰기를 할 내용을 담음
+
+int lseek(int fd, off_t offset, int whence)
+- whence: 기준점
+  - SEEK_SET: 파일의 시작점을 기준, SEEK_CUR: 현재 지점, SEEK_END: 끝점
+- offset만큼 파일의 커서를 움직임(단위: bytes)
+
+int creat(char *pathname, mode_t mode)
+- mode: 0400처럼 접근권한 설정
+
+======================================================================================
+
+Basic I/O
+#include <stdio.h>
+
+#define	MAX_BUF	256
+
+main(int argc, char *argv[])
+{
+	FILE	*fp; // 1. 파일 구조체 선언
+	char	buf[MAX_BUF];
+	int		line;
+
+	if (argc != 2)  {
+		printf("Usage: %s filename\n", argv[0]);
+		exit(1);
+	}
+
+// 2. 스트림 열기
+	if ((fp = fopen(argv[1], "rt")) == NULL)  {
+		perror("fopen");
+		exit(1);
+	}
+
+	line = 1;
+  // fgets로 한 line을 읽음, 한 줄이 MAX_BUF보다 크다면 \n까지 읽음
+  // buf: 담을 버퍼, MAX_BUF: 최대로 읽을 크기, fp: File descriptor
+	while (fgets(buf, MAX_BUF, fp))  {
+		printf("%4d: %s", line++, buf);
+	}
+
+	fclose(fp);
+}
+
+======================================================================================
+
+
+# Open a stream
+FILE* fopen(char *pathname, char* type)
+type: access mode인 r, w, a, r+, w+, a+와 file type인 t, b를 결합
+
+# Close a stream
+int fclose(FILE* fp);
+
+======================================================================================
+
+Character I/O
+- Input
+int getc(FILE* fp)
+int fgetc(FILE* fp)
+그냥 둘이 똑같음
+
+- Output
+int putc(int ch, FILE* fp);
+int fputc(int ch, FILE* fp);
+ch는 내부에서 char로 바뀜, fp에 ch를 씀
+
+======================================================================================
+
+Line I/O
+- Input
+char* fgets(char* buf, int max, FILE* fp)
+최대 max만큼 fp에서 읽어 buf에 담음
+
+- Output
+int fputs(char* str, FILE* fp);
+fp에 str을 씀
+
+======================================================================================
+
+Direct I/O (Binary I/O)
+- Input
+size_t fread(void* ptr, size_t size, size_t nobj, FILE* fp);
+ptr: 파일에서 읽어온 것을 저장할 block을 가리키는 포인터
+size: block의 사이즈
+nobj: 개수
+=> size * nobj 만큼 bytes만큼 읽어옴
+
+- Output
+size_t fwrite(void* ptr, size_t size, size_t nobj, FILE* fp);
+ptr: 쓰고 싶은 데이터가 저장된 메모리의 시작 주소를 가리킴
+size: 쓰고 싶은 데이터의 단위 크기, 단위는 바이트
+nobj: 몇 개 쓸 것인가
+
+======================================================================================
+
+### Functions
+
+- int fseek(FILE* fp, long offset, int whence)
+lseek와 같음
+
+- long ftell(FILE* fp)
+현재 파일 커서 위치 알려줌
+
+- void rewind(FILE* fp)
+다시 파일 포인터를 제일 앞으로 오게함
+
+======================================================================================
+
+Error Handling of I/O
+- read를 하기 위해 open을 꼭 해야함
+- read는 EOF인지 꼭 확인해야함

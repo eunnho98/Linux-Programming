@@ -1,0 +1,1 @@
+pipe.c 에 추가하여 child도 parent에게 메시지를 전달하도록 변경

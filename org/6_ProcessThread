@@ -1,0 +1,98 @@
+pid_t getpid() // process ID를 읽어옴, 실제로 pid_t는 integer
+
+pid_t getppid() // 부모 프로세스 ID를 읽어옴,
+// UNIX에선 fork로만 새로운 프로세스를 생성, 
+// fork를 호출한 프로세스를 부모, fork로 만들어진 프로세스를 child
+
+uid_t getiod() // real user ID
+
+uid_t geteuid() // effective user ID
+
+gid_t getgid() // group ID
+
+gid_t getegid() // effective group ID
+
+======================================================================================
+
+# Create new process
+pid_t fork()
+- o이면 child, 양수이면 parent, -1이면 error
+
+EX
+while(1) {
+  int sock = accpet();
+  if((pid = fork()) == 0) {
+    // child
+  }
+  else {
+    // parent
+  }
+}
+
+======================================================================================
+
+# End Process
+
+void exit(int)
+
+void atexit(void* function)
+- 핸들러 등록
+
+======================================================================================
+
+# Wait Process
+
+pid_t wait(int *statloc)0; 
+- 내가 만든 child process중 어느 하나라도 종료되기를 기다림
+
+pid_t waitpid(pid_t pid, int *statloc, int options); 
+- 특정 프로세스 종료를 기다림
+
+// statloc으로 exit에서 넘겨준 integer가 들어감, 거의 사용하지 않으므로 
+// 일반적으로 null을 넣음
+
+======================================================================================
+
+# Exec
+
+프로그램을 실행시킬 때 ./a.out 하는 것을 코드에서 하는 것
+
+// list, argument를 쭉 써줌, 끝을 알려주기 위해 마지막에 꼭 널포인터 줘야함
+int execl(char *pathname, char *arg0, ..., (char *)0)
+
+// vector(array)로 줌, argv 마지막에 꼭 널포인터
+int execv(char *pathname, char *argv[])
+
+// 환경변수를 주며 exec with list
+int execle(char *pathname, char *arg0, ..., 널포인터, char *envp[])
+
+// 환경변수를 주며 exec with vector
+int execve(char *pathname, char *argv[], char *envp[]);
+
+// 명령어를 typing하면 PATH라는 환경변수에 있는 디렉토리에서 찾아 실행함
+// p가 붙으면 파라미터로 준 filename을 PATH에서 찾아 실행시킴
+int execlp(char *filename, char *arg0, ..., 널포인터);
+int execvp(char *filename, char*argv[]);
+
+system("ls -al")처럼 소스코드내에서 사용 가능
+
+======================================================================================
+
+# Thread
+#include <Pthread)
+linking을 할 때 -pthread를 꼭 붙여야함
+=> gcc -o ~ ~ -lpthread
+
+스레드 생성, fork
+pthread_create(&tid1, NULL, (void *)PrintMsg, (void *)msg1) < 0)
+스레드 id, 스레드 attribute(NULL이면 default), 쓰레드함수, 쓰레드함수의 파라미터
+파라미터는 하나만 넣도록 약속됨
+int pthread_create(~)
+
+스레드 종료, exit
+pthread_exit(NULL);
+void pthread_exit(void *retval);
+
+스레드를 종료되기를 기다림, wait
+pthread_join(tid2, NULL) < 0)
+int pthread_join(~)

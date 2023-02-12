@@ -1,0 +1,88 @@
+# Get file status
+#include <sys/types.h>
+#include <sys/>stat.h>
+
+int stat(char* pathname, struct stat* buf)
+- 파일의 status를 읽어옴
+
+int fstat(int fd, struct stat* buf)
+- file descriptor의 status를 읽어옴
+
+int lstat(char* pathname, struct stat* buf)
+- pathname 자체에 대한 status를 읽어옴
+
+struct stat 구조체에 stat이 담김
+
+- st_mode: file의 type(디렉토리인지 파일인지) & mode(user, owner group에 대한 rwx 권한)을 저장
+    - st_mode는 권한도 받아오므로 타입만 빼오는 것도 있음
+- st_ino: inode 번호 담음
+- st_dev: 이 파일에 저장되어 있는 디바이스 번호
+- st_nlink
+- st_uid, st_gid: 유저, 그룹의 ID 저장
+- st_size: 이 파일의 크기 저장
+- st_atime, st_mtime, st_ctime: 마지막으로 파일이 접근된 시간, 마지막으로 수정된 시간, 마지막으로 파일의 status가 변경된 시간
+- st_blksize: 하드디스크일 때만 사용
+- st_blocks: block의 개수
+
+======================================================================================
+
+# Permission
+
+mode_t umask(mode_t cmask)
+umask(S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH)
+파일을 생성할 때 특정 모드의 비트를 꺼라
+cmask에 그 파라미터를 넣으면 그 비트를 끔
+
+int chmod(char* pathname, mode_t mode)
+int fchmod(int fd, mode_t mode)
+파일에 대한 모드를 바꿈
+
+chmod("bar", (statbuf.st_mode & ~S_IWGRP) | S_ISUID) < 0) -> 
+- ~을 하여 현재 모드와 And -> 그 비트를 끄겠다
+chmod("foo", S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH) < 0)
+- OR로 연결하면 그 비트를 키겠다
+
+======================================================================================
+
+# ownership
+
+int chown(char* pathname, uid_t owner, gid_t group)
+- 이 파일의 onwer과 group을 파라미터로 준 owner와 group으로 바꿈
+fchown, lchown은 fstat, lstat과 비슷
+
+======================================================================================
+
+# Link
+#include <unistd.h>
+
+int link(char* existingPath, char* newPath)
+- hardlink를 만듦
+int symlink(char* actualPath, char* symPath);
+- Symbolic LInk를 만듦
+
+둘다 0 if Ok, -1 if error
+
+======================================================================================
+
+# Remove, Rename
+
+int remove(char* pathname)
+int rename(char* oldname, char* newname)
+
+======================================================================================
+
+# Reading Dirtory
+#include <dirent.h>
+
+DIR* opendir(char* pathname);
+- return pointer if OK, NULL on error
+
+struct dirent* readdir(DIR* dp);
+- return pointer if OK, NULL at end of directory
+- opendir의 반환 값을 readdir에 넣으면 호출할 때마다 하나의 파일 엔트리가 넘어옴
+
+struct dirent에는 잘 쓰이는, 파일의 이름을 나타내는 d_name 존재
+
+void rewinddir(DIR* dp)이면 rewind
+
+int closedir(DIR* dp)

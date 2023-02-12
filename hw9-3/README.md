@@ -1,0 +1,1 @@
+select.c를 thread version으로 변경

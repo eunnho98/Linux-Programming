@@ -1,0 +1,59 @@
+### Edit Commaand in command mode
+- x: 문자 삭제
+
+- dw: 단어 삭제
+
+- dd: line 삭제
+
+- 5dd: 5 lines 삭제
+
+- yy: line copy
+
+- 3yy: 3 lines copy
+
+- p: paste
+
+- r: replace 문자
+
+- cw: change word
+
+- ~: convert to upper-lower char
+
+- J: 두 라인 한 라인으로 합치기
+
+- u: Ctrl Z
+
+.: repeat
+
+======================================================================================
+
+### Command in command-line mode
+- /string: search string in foreward
+
+- ?string: search string in backward
+
+-n, N: search next string in foreward/backward
+
+- :1, $s/cnt/count/g → 첫 번째 줄부터 끝까지(1, $) cnt를 count로 바꾸고(s) 커서를 거기로 옮겨라(g)
+    - g가 커서가 아니라 global 한 단어가 아닌 모든 cnt를 count로 바꾸라는 것
+
+- :10, .w! filename** → 10번째 줄부터 현재 라인까지(10, .) filename으로 덮어써라(w), 느낌표는 warning을 무시하기 위하여 사용
+
+- :.,+10y → 현재부터 그 다음 열 개의 줄을(.,+10) yank(copy)
+
+- :!ls → 느낌표를 치고 shell command를 치면 vi에서 shell command가 작동
+
+======================================================================================
+
+### gcc
+- gcc -I../include -L../lib math.c -lm** → 헤더 파일이나 라이브러리 파일이 현재 위치에 없을 때 그 위치를 지정해줘야 함
+    - 헤더 파일의 위치는 ../include에 있고, 라이브러리 파일은 ../lib에 있고, 링킹할 라이브러리는 m이다(math)
+    - 링킹할 라이브러리의 이름은 제일 뒤에 써줘야 함
+
+/usr/include, /usr/lib는 시스템에 있는 헤더파일 & 라이브러리
+
+→ 내가 만든 헤더파일이나 라이브러리는 시스템에 넣을 수 없음
+
+→ I, L로 내가 만든 헤더파일 / 라이브러리가 거기 있으니 찾아가라고 명령
+
+→ 거기에 없으면 그제서야 시스템 디렉토리로 들어가서 찾음
